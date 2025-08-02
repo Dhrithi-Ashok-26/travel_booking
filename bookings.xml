@@ -1,0 +1,14 @@
+<bookings>
+    <booking>
+        <name>John Doe</name>
+        <destination>Paris</destination>
+        <date>2024-12-01</date>
+        <status>Confirmed</status>
+    </booking>
+    <booking>
+        <name>Jane Smith</name>
+        <destination>New York</destination>
+        <date>2024-11-15</date>
+        <status>Pending</status>
+    </booking>
+</bookings>

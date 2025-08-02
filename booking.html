@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Management - Travel Booking</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            width: 600px;
+            margin: 0 auto;
+            padding-top: 50px;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+        }
+        button {
+            padding: 10px;
+            background-color: green;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: darkgreen;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        .edit, .delete {
+            cursor: pointer;
+            color: blue;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Manage Travel Bookings</h2>
+        <form id="bookingForm">
+            <input type="text" id="name" placeholder="Customer Name" required />
+            <input type="text" id="destination" placeholder="Destination" required />
+            <input type="date" id="date" placeholder="Date" required min="2024-01-01" />
+            <select id="status">
+                <option value="Confirmed">Confirmed</option>
+	</select>
+            <button type="submit">Add Booking</button>
+        </form>
+
+        
+
+        <table id="bookingTable">
+            <thead>
+                <tr>
+                    <th>Customer Name</th>
+                    <th>Destination</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        let bookings = [];
+        let editingIndex = -1;
+        const bookingForm = document.getElementById("bookingForm");
+        const bookingTable = document.getElementById("bookingTable").getElementsByTagName("tbody")[0];
+
+        bookingForm.addEventListener("submit", function(e) {
+            e.preventDefault();
+            const name = document.getElementById("name").value;
+            const destination = document.getElementById("destination").value;
+            const date = document.getElementById("date").value;
+            const status = document.getElementById("status").value;
+
+            const newBooking = { name, destination, date, status };
+
+            if (editingIndex === -1) {
+                bookings.push(newBooking); // Add new booking
+            } else {
+                bookings[editingIndex] = newBooking; // Update existing booking
+                editingIndex = -1; // Reset editing mode
+            }
+
+            updateTable();
+            bookingForm.reset();
+        });
+
+        function updateTable() {
+            bookingTable.innerHTML = "";
+            bookings.forEach((booking, index) => {
+                const row = bookingTable.insertRow();
+                row.insertCell(0).textContent = booking.name;
+                row.insertCell(1).textContent = booking.destination;
+                row.insertCell(2).textContent = booking.date;
+                row.insertCell(3).textContent = booking.status;
+                const actions = row.insertCell(4);
+                actions.innerHTML = `<span class="edit" onclick="editBooking(${index})">Edit</span> | <span class="delete" onclick="deleteBooking(${index})">Delete</span>`;
+            });
+        }
+
+        function editBooking(index) {
+            const booking = bookings[index];
+            document.getElementById("name").value = booking.name;
+            document.getElementById("destination").value = booking.destination;
+            document.getElementById("date").value = booking.date;
+            document.getElementById("status").value = booking.status;
+
+            editingIndex = index; // Set editing index
+        }
+
+        function deleteBooking(index) {
+            if (confirm("Are you sure you want to delete this booking?")) {
+                bookings.splice(index, 1);
+                updateTable();
+            }
+        }
+	function exportToXML() {
+            let xmlData = `<bookings>\n`;
+            bookings.forEach(booking => {
+                xmlData += `<booking>\n`;
+                xmlData += `<name>${booking.name}</name>\n`;
+                xmlData += `<destination>${booking.destination}</destination>\n`;
+                xmlData += `<date>${booking.date}</date>\n`;
+                xmlData += `<status>${booking.status}</status>\n`;
+                xmlData += `</booking>\n`;
+            });
+            xmlData += `</bookings>`;
+
+            const blob = new Blob([xmlData], { type: 'text/xml' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'bookings.xml';
+            link.click();
+        }
+
+
+            </script>
+</body>
+</html>
